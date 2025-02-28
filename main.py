@@ -10,7 +10,7 @@ async def lifespan(app: FastAPI):
     # Código de startup: aquí creamos las tablas
     Base.metadata.create_all(bind=engine)
     yield
-    # Código de shutdown: aquí podrías cerrar conexiones o liberar recursos
+    # Código de apagado: aquí eliminamos las tablas
 
 
 app = FastAPI(lifespan=lifespan)

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Depends, status
-from db.models.usuarios import Usuario
+from db.models.usuario_model import Usuario
 from db.database import get_db
 from sqlalchemy.orm import Session
 from db.models.usuario_model import UsuarioDB
