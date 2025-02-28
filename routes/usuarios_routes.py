@@ -23,7 +23,7 @@ async def consultar_usuarios(usuario_actual: UsuarioDB = Depends(consultar_usuar
 
 # Retorna solo un usuario al buscarlo por su "id".
 @usuario.get(path="/{id}")
-async def consultar_usuario(id: int, db: Session = Depends(dependency=get_db)) -> Usuario:
+async def consultar_usuario(id: int, db: Session = Depends(dependency=get_db), usuario_actual: UsuarioDB = Depends(consultar_usuario_actual)) -> Usuario:
     usuario = db.query(UsuarioDB).filter(UsuarioDB.id == id).first()
 
     if usuario:
@@ -33,7 +33,7 @@ async def consultar_usuario(id: int, db: Session = Depends(dependency=get_db)) -
 
 # Retorna todos los usuarios que coincidan con el "rol" especificado.
 @usuario.get(path="/rol/{rol}")
-async def consultar_por_rol(rol: str, db: Session = Depends(dependency=get_db)):
+async def consultar_por_rol(rol: str, db: Session = Depends(dependency=get_db), usuario_actual: UsuarioDB = Depends(consultar_usuario_actual)):
     usuario = db.query(UsuarioDB).filter(UsuarioDB.rol == rol).all()
 
     if usuario:
@@ -43,7 +43,7 @@ async def consultar_por_rol(rol: str, db: Session = Depends(dependency=get_db)):
 
 # Retorna el usuario que coincida con el "codigo de Estudiante o Empleado" especificado.
 @usuario.get(path="/codigo/{codigo_usuario}")
-async def consultar_por_codigo(codigo_usuario: str, db: Session = Depends(dependency=get_db)):
+async def consultar_por_codigo(codigo_usuario: str, db: Session = Depends(dependency=get_db), usuario_actual: UsuarioDB = Depends(consultar_usuario_actual)):
     usuario = db.query(UsuarioDB).filter(UsuarioDB.codigo_usuario == codigo_usuario).first()
 
     if usuario:
@@ -75,7 +75,7 @@ async def crear_usuario(usuario: Usuario, db: Session = Depends(dependency=get_d
 
 # Actualizar Usuario
 @usuario.put(path='/actualizar-usuario/{id}')
-async def actualizar_usuario(id: int, usuario: Usuario, db: Session = Depends(dependency=get_db)):
+async def actualizar_usuario(id: int, usuario: Usuario, db: Session = Depends(dependency=get_db), usuario_actual: UsuarioDB = Depends(consultar_usuario_actual)):
     usuario_db = db.query(UsuarioDB).filter(UsuarioDB.id == id).first()
 
     if not usuario_db:
@@ -96,7 +96,7 @@ async def actualizar_usuario(id: int, usuario: Usuario, db: Session = Depends(de
 
 # Eliminar Usuarios
 @usuario.delete(path='/eliminar-usuario/{id}', status_code=status.HTTP_204_NO_CONTENT)
-async def eliminar_usuario(id: int, db: Session = Depends(dependency=get_db)):
+async def eliminar_usuario(id: int, db: Session = Depends(dependency=get_db), usuario_actual: UsuarioDB = Depends(consultar_usuario_actual)):
     usuario_db = db.query(UsuarioDB).filter(UsuarioDB.id == id).first()
 
     if not usuario_db:
