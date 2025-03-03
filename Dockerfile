@@ -1,9 +1,9 @@
 FROM python:3.13
 
-WORKDIR /microservicio-usuarios
+WORKDIR /ms-usuarios
 
-COPY ./requirements.txt /microservicio-usuarios/requirements.txt
-RUN pip install --no-cache-dir --upgrade -r /microservicio-usuarios/requirements.txt
+COPY ./requirements.txt /ms-usuarios/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /ms-usuarios/requirements.txt
 
 COPY . .
 

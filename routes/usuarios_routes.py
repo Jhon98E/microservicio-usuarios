@@ -48,7 +48,7 @@ async def consultar_por_codigo(codigo_usuario: str, db: Session = Depends(depend
 
     if usuario:
         return usuario
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Usuario con ID {id} no fue encontrado")
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Usuario con ID {codigo_usuario} no fue encontrado")
 
 
 # Crear un Usuario
