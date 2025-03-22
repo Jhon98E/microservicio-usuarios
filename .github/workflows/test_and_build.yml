@@ -45,4 +45,4 @@ jobs:
       uses: docker/build-push-action@v6
       with:
         push: true
-        tags: ghcr.io/${{ github.actor }}/ms-usuarios:latest
+        tags: ghcr.io/jhon98e/ms-usuarios:latest
