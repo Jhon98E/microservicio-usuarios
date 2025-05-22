@@ -52,8 +52,8 @@ jobs:
     - name: Construir y Enviar a DockerHub
       uses: docker/build-push-action@v6
       with:
-        context: microservicio-usuarios
-        file: microservicio-usuarios/Dockerfile
+        context: .
+        file: ./Dockerfile
         push: true
         tags: |
           docker.io/${{ secrets.DOCKERHUB_USERNAME }}/ms-usuarios:latest
