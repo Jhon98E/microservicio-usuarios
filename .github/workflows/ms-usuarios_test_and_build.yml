@@ -1,8 +1,16 @@
-name: Microservicio Usuarios CI/CD
+name: CI/CD Microservicio Usuarios
 
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - 'microservicio-usuarios/**'
+      - '.github/workflows/ms-usuarios_test_and_build.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'microservicio-usuarios/**'
+      - '.github/workflows/ms-usuarios_test_and_build.yml'
 
 permissions:
   contents: read
@@ -17,31 +25,68 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set up Python 3.13
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v5
       with:
         python-version: "3.13"
 
-    - name: Install dependencies
+    - name: Instalando dependencias
+      working-directory: microservicio-usuarios
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-    - name: linting with ruff
+    - name: Linting con ruff
+      working-directory: microservicio-usuarios
       run: |
-        ruff check . --exit-zero
+        ruff check .
 
-    - name: Test with pytest
+    - name: Testing con pytest
+      working-directory: microservicio-usuarios
       run: |
         pytest -v
 
-    - name: Login to DockerHub
+    - name: Accediendo a DockerHub
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
   
-    - name: Build and push to DockerHub
+    - name: Construir y Enviar a DockerHub
       uses: docker/build-push-action@v6
       with:
+        context: microservicio-usuarios
+        file: microservicio-usuarios/Dockerfile
         push: true
-        tags: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/ms-usuarios:latest
+        tags: |
+          docker.io/${{ secrets.DOCKERHUB_USERNAME }}/ms-usuarios:latest
+          docker.io/${{ secrets.DOCKERHUB_USERNAME }}/ms-usuarios:${{ github.sha }}
+  
+  # desplegar_a_kubernetes:
+  #   needs: ms-usuarios_test_and_build
+  #   runs-on: ubuntu-latest
+  
+  #   steps:
+  #   - name: Checkout repo
+  #     uses: actions/checkout@v4
+    
+  #   - name: Instalar kubectl
+  #     uses: azure/setup-kubectl@v3
+  #     with:
+  #       version: 'latest'
+    
+  #   - name: Configurar credenciales de Kubernetes
+  #     run: |
+  #       mkdir -p $HOME/.kube
+  #       echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
+  #       # Verificar que el kubeconfig sea válido
+  #       kubectl config view --minify
+  #       kubectl cluster-info
+    
+  #   - name: Actualizar imagen en deployment
+  #     run: |
+  #       sed -i "s|jhonenriquez98/ms-usuarios:.*|${{ secrets.DOCKERHUB_USERNAME }}/ms-usuarios:${{ github.sha }}|g" backend/microservicio-usuarios/k8s/deployment.yml
+    
+  #   - name: Aplicar deployment
+  #     run: |
+  #       kubectl apply -f backend/microservicio-usuarios/k8s/deployment.yml
+  #       kubectl apply -f backend/microservicio-usuarios/k8s/service.yml
